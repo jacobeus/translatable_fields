@@ -1,0 +1,32 @@
+TranslatableFields
+==================
+
+This is a pretty stupid Rails plugin used to ease out i18n of DB fields. I only made a plugin out of this code because I'm using it in two simple applications.
+
+The plugin make it possible to have fields in some of your tables with versions in several different languages. It does not deal with internatialization of the user interface; it complements well i18n plugins which only deal with UI, though (such as Globalite).
+
+This plugin supposes that for each translated attribute, you have a field for each language in your model table, with the language specified as a suffix. For exemple, a "Post" model with fields "title" and "body" translated in English and French should provides in the table "posts" the fields "title_en", "title_fr", "body_en", "body_fr". Obviously this require DB structure updates every time you want to add a new language, so that's not scalable for an unspecified quantity of languages; not a solution for every situation, but that works with applications with 2 or 3 languages.
+
+Example
+=======
+
+In your models:
+
+  class Post < ActiveRecord::Base
+    translatable_fields :title, :abstract, :body
+  end
+
+In your DB, fields "title_en", "title_fr", "abstract_en", "abstract_fr", "body_en", "body_fr".
+
+In a before_filter in ApplicationController:
+
+  ActiveRecord::TranslatableFields.current_language = currently_used_locale # where currently_used_locale is e.g. "en" or "fr".
+                                                                            # Usually specified somewhere in your session or DB (if set as user preference).
+                                                                            
+Everywhere else:
+
+  Post.find(:first).title # returns the english or french version of the title (depending on what's the currently set language).
+
+
+
+Copyright (c) 2008 Nicolas Jacobeus, released under the MIT license
